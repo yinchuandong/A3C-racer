@@ -29,7 +29,8 @@
 
   Dom.get('j-btn-train').onclick = function(){
     isTraining = !isTraining;
-    this.innerText = 'train:(' + isTraining + ')'
+    keyFaster = false;
+    this.innerText = 'train:(' + isTraining + ')';
   }
 
   /*----------- the above is controller----------------------------------*/
@@ -75,6 +76,9 @@
     return penalty * (speed / maxSpeed);
   }
 
+
+
+
 //=========================================================================
 // THE GAME LOOP
 //=========================================================================
@@ -110,7 +114,7 @@
       }
 
       sampleCount += 1;
-      if(!terminal && sampleCount < 2){
+      if(!terminal && sampleCount < 3){
         return;
       }
       sampleCount = 0;
@@ -123,9 +127,7 @@
         img: img,
         reward: reward,
         terminal: terminal,
-        playerX: playerX - lastPlayerX,
-        speed: speed - lastSpeed,
-        start_frame: START_FRAME,
+        action: [keyLeft, keyRight, keyFaster, keySlower]    
       }
 
       // console.log(data);
@@ -159,12 +161,10 @@
       data: data,
       dataType: 'json',
       success: function(ret){
-        Dom.get('j-btn-start').innerText = 'start' + ret
-        // playerX = playerX + ret.playerX;
-        // speed = speed + ret.speed * 100; 
-        // // speed = speed + ret.speed;
-        // speed = speed < 0 ? 0 : speed;
-        // console.log(speed, ret.speed);
+        keyLeft = ret['keyLeft']
+        keyRight = ret['keyRight']
+        keyFaster = ret['keyFaster']
+        keySlower = ret['keySlower']
       }
     });
   }

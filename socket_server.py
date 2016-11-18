@@ -7,6 +7,8 @@ import time
 import numpy as np
 import os
 
+from action_helper import encode_action, decode_action
+
 
 # python xxx.py
 # 127.0,0.1:5000
@@ -35,7 +37,7 @@ def req_train():
     image = Image.open(BytesIO(base64.b64decode(data['img']))).convert('L')
 
     # return jsonify(decode_action)
-    return data['reward']
+    return jsonify(decode_action(2))
 
 
 @app.route('/')
