@@ -1,0 +1,7 @@
+img
+*.pyc
+models
+models*
+*.pkl
+.DS_Store
+
