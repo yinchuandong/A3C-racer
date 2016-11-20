@@ -18,7 +18,8 @@ app.debug = False  # you need to cancel debug mode when you run it on gpu
 socketio = SocketIO(app)
 
 net = A3C()
-state = []
+# four threads
+state_list = [[], [], [], []]
 
 
 def getTime():
@@ -30,18 +31,18 @@ def train():
     data = request.form
     thread_id = int(data['thread_id'])
     image = Image.open(BytesIO(base64.b64decode(data['img']))).convert('L')
-    global state
-    if len(state) == 0:
-        state = np.stack((image, image, image, image), axis=2)
+    global state_list
+    if len(state_list[thread_id]) == 0:
+        state_list[thread_id] = np.stack((image, image, image, image), axis=2)
     else:
         image = np.reshape(image, (84, 84, 1))
-        state = np.append(state[:, :, 1:], image, axis=2)
+        state_list[thread_id] = np.append(state_list[thread_id][:, :, 1:], image, axis=2)
     reward = float(data['reward'])
     terminal = data['terminal'] == 'true'
 
-    # print reward, terminal, np.shape(state)
+    # print reward, terminal, np.shape(state_list[thread_id])
     # action_id = 2
-    action_id = net.train_function(thread_id, state, reward, terminal)
+    action_id = net.train_function(thread_id, state_list[thread_id], reward, terminal)
     return jsonify(decode_action(action_id))
 
 
