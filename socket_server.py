@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-# from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO
 from PIL import Image
 from io import BytesIO
 import base64
@@ -14,7 +14,8 @@ from a3c import A3C
 # 127.0,0.1:5000
 app = Flask(__name__, static_url_path='', static_folder='static-ddpg')
 app.config['SECRET_KEY'] = 'secret!'
-app.debug = True  # you need to cancel debug mode when you run it on gpu
+app.debug = False  # you need to cancel debug mode when you run it on gpu
+socketio = SocketIO(app)
 
 net = A3C()
 state = []
