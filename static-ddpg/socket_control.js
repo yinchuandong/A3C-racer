@@ -1,4 +1,6 @@
 (function(){
+
+  var thread_id = window.location.hash != '' ? window.location.hash.substr(1, 2) : 0; 
   var socket = io('http://127.0.0.1:5000');
   var jStatus = Dom.get('server-status');
 
@@ -78,7 +80,6 @@
 
 
 
-
 //=========================================================================
 // THE GAME LOOP
 //=========================================================================
@@ -121,20 +122,14 @@
 
       var img = capture();
       var reward = getReward();
-      // console.log([playerX, speed, maxSpeed]);
-      // [0, 9840, 12000]
+
       var data = {
         img: img,
         reward: reward,
         terminal: terminal,
-        action: [keyLeft, keyRight, keyFaster, keySlower]    
+        thread_id: thread_id
       }
 
-      // console.log(data);
-      // console.log(speed, playerX)
-      // if(COLLISION_OCCURED){
-      //   console.log(data);
-      // }
       if(isTraining){
         // socket.emit('message', data);
         sendToServer(data);
