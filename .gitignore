@@ -4,5 +4,5 @@ models
 models*
 *.pkl
 .DS_Store
-tmp
+tmp_*
 

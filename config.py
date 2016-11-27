@@ -14,9 +14,9 @@ INITIAL_ALPHA_LOW = 1e-4    # log_uniform low limit for learning rate
 INITIAL_ALPHA_HIGH = 1e-2   # log_uniform high limit for learning rate
 INITIAL_ALPHA_LOG_RATE = 0.4226  # log_uniform interpolate rate for learning rate (around 7 * 10^-4)
 
-PARALLEL_SIZE = 4  # parallel thread size, please start game_server first
+PARALLEL_SIZE = 1  # parallel thread size, please start game_server first
 USE_GPU = True
-USE_LSTM = True
+USE_LSTM = False
 
 CHECKPOINT_DIR = 'tmp/checkpoints'
 LOG_FILE = 'tmp/a3c_log'
