@@ -116,7 +116,7 @@
       }
 
       sampleCount += 1;
-      if(!terminal && sampleCount < 3){
+      if(!terminal && sampleCount < 2){
         return;
       }
       sampleCount = 0;
