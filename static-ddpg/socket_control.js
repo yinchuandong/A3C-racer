@@ -108,6 +108,7 @@
     },
 
     afterUpdate: function(dt){ 
+      // console.log(keyFaster);
       // if collision or off-road occurs, restart the game
       var terminal = false;
       if (COLLISION_OCCURED || Math.abs(playerX) > 1.0){
@@ -156,10 +157,13 @@
       data: data,
       dataType: 'json',
       success: function(ret){
-        keyLeft = ret['keyLeft']
-        keyRight = ret['keyRight']
-        keyFaster = ret['keyFaster']
-        keySlower = ret['keySlower']
+        keyLeft = ret['keyLeft'];
+        keyRight = ret['keyRight'];
+        keyFaster = ret['keyFaster'];
+        keySlower = ret['keySlower'];
+        if (!isTraining){
+          keyFaster = false;
+        }
       }
     });
   }

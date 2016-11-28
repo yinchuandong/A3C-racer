@@ -41,9 +41,11 @@ def train():
     terminal = data['terminal'] == 'true'
 
     # print reward, terminal, np.shape(state_list[thread_id])
-    # action_id = 2
     action_id = net.train_function(thread_id, state_list[thread_id], reward, terminal)
     return jsonify(decode_action(action_id))
+    # image = Image.fromarray(state_list[thread_id][:, :, 0])
+    # image.save('img/' + str(getTime()) + '.png')
+    # return jsonify(decode_action(0))
 
 
 @app.route('/')

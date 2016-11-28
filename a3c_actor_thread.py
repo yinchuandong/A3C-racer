@@ -196,6 +196,7 @@ class A3CActorThread(object):
                 self.learning_rate_input: cur_learning_rate
             })
 
+            print len(self.states), len(self.actions), len(self.values)
             # reste temporal buffer
             self.states = []
             self.actions = []
