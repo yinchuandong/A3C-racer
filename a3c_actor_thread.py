@@ -112,10 +112,10 @@ class A3CActorThread(object):
             print 'policy=', policy_
             print 'value=', value_
 
-        actionId = self.choose_action(policy_)
+        action_id = self.choose_action(policy_)
 
         self.states.append(state)
-        self.actions.append(actionId)
+        self.actions.append(action_id)
         self.values.append(value_)
 
         self.episode_reward += reward
@@ -206,7 +206,7 @@ class A3CActorThread(object):
             sess.run(self.reset_gradients)
             sess.run(self.sync)
 
-        return actionId
+        return action_id
 
 
 if __name__ == '__main__':
