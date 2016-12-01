@@ -97,7 +97,7 @@ class A3CActorThread(object):
         self.summary_writer.add_summary(summary_str, global_t)
         return
 
-    def get_action(self, next_state):
+    def get_action(self, sess, next_state):
         # reduce the influence of socket connecting time
         if self.episode_start_time == 0.0:
             self.episode_start_time = timestamp()

@@ -1,16 +1,6 @@
 (function(){
 
   var thread_id = window.location.hash != '' ? window.location.hash.substr(1, 2) : 0; 
-  var socket = io('http://127.0.0.1:5000');
-  var jStatus = Dom.get('server-status');
-
-  socket.on('connect', function(){
-    jStatus.innerHTML = '<p>connect</p>';
-  });
-  
-  socket.on('disconnect', function(){
-    jStatus.innerHTML += '<p>disconnect</p>';
-  });
 
   Dom.get('j-btn-start').onclick = function(){
     var space = {
@@ -18,7 +8,6 @@
       speed_space: [3.0, 10.0],
     };
     // tell server the range of action, for normalization
-    socket.emit('action_space', space);
     // for avoiding exceptions in replay buffer on server
     // START_FRAME = true;
     Game.run(gameParams);
@@ -135,12 +124,12 @@
       if(isTraining){
         // socket.emit('message', data);
         sendToServer(data);
+        if (START_FRAME){
+          START_FRAME = false;
+        }
         Game.stop();
       }
 
-      if (START_FRAME){
-        START_FRAME = false;
-      }
       lastPlayerX = playerX;
       lastSpeed = speed;
 
