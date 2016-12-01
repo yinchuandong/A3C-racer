@@ -57,6 +57,8 @@ class A3C(object):
         self.sess.run(tf.initialize_all_variables())
         self.saver = tf.train.Saver()
         self.restore()
+
+        self.action_value_list = [None] * PARALLEL_SIZE
         return
 
     def restore(self):
@@ -79,16 +81,33 @@ class A3C(object):
         self.saver.save(self.sess, CHECKPOINT_DIR + '/' + 'checkpoint', global_step=self.global_t)
         return
 
-    def train_function(self, thread_id, state, reward, terminal):
+    # def train_function(self, thread_id, state, reward, next_state, terminal):
+    #     actor_thread = self.actor_threads[thread_id]
+    #     action_id = actor_thread.process(self.sess, self.global_t, state, reward, terminal)
+    #     self.global_t += 1
+    #     if self.global_t % 1000000 < LOCAL_T_MAX:
+    #         self.backup()
+    #     return action_id
+         
+    def train_function(self, thread_id, state, reward, next_state, terminal, start_frame):
         actor_thread = self.actor_threads[thread_id]
-        action_id = actor_thread.process(self.sess, self.global_t, state, reward, terminal)
+        next_action_id, next_value = actor_thread.get_action(self.sess, next_state)
+        if not start_frame:
+            # for the start_frame, just use it to get value_
+            action_id = self.action_value_list[thread_id][0]
+            value = self.action_value_list[thread_id][1]
+            actor_thread.process(self.sess, self.global_t, state, action_id, value, reward, terminal)
+
+        # delay update of previous action and value
+        self.action_value_list[thread_id] = (next_action_id, next_value)
         self.global_t += 1
-        if self.global_t % 1000000 < LOCAL_T_MAX:
+        if self.global_t % 100000 == 0:
             self.backup()
-        return action_id
+        return next_action_id
 
 
 if __name__ == '__main__':
     print 'a3c.py'
-    net = A3C()
+    # net = A3C()
     # net.train_function(0)
+

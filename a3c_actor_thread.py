@@ -97,7 +97,7 @@ class A3CActorThread(object):
         self.summary_writer.add_summary(summary_str, global_t)
         return
 
-    def process(self, sess, global_t, state, reward, terminal):
+    def get_action(self, next_state):
         # reduce the influence of socket connecting time
         if self.episode_start_time == 0.0:
             self.episode_start_time = timestamp()
@@ -107,20 +107,22 @@ class A3CActorThread(object):
             if USE_LSTM:
                 self.start_lstm_state = self.local_network.lstm_state_out
 
-        policy_, value_ = self.local_network.run_policy_and_value(sess, state)
+        policy_, value_ = self.local_network.run_policy_and_value(sess, next_state)
         if self.thread_index == 0 and self.local_t % 1000 == 0:
             print 'policy=', policy_
             print 'value=', value_
+        next_action_id = self.choose_action(policy_)
+        return next_action_id, value_
 
-        action_id = self.choose_action(policy_)
+    def process(self, sess, global_t, state, action_id, value, reward, terminal):
 
         self.states.append(state)
         self.actions.append(action_id)
-        self.values.append(value_)
+        self.values.append(value)
+        reward = np.clip(reward, -1.0, 1.0)
+        self.rewards.append(reward)
 
         self.episode_reward += reward
-        self.rewards.append(np.clip(reward, -1.0, 1.0))
-
         self.local_t += 1
 
         if terminal:
@@ -196,7 +198,7 @@ class A3CActorThread(object):
                 self.learning_rate_input: cur_learning_rate
             })
 
-            print len(self.states), len(self.actions), len(self.values)
+            # print len(self.states), len(self.actions), len(self.values)
             # reste temporal buffer
             self.states = []
             self.actions = []
@@ -205,8 +207,7 @@ class A3CActorThread(object):
 
             sess.run(self.reset_gradients)
             sess.run(self.sync)
-
-        return action_id
+        return
 
 
 if __name__ == '__main__':

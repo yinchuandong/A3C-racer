@@ -128,6 +128,7 @@
         img: img,
         reward: reward,
         terminal: terminal,
+        start_frame: START_FRAME,
         thread_id: thread_id
       }
 

@@ -19,7 +19,8 @@ socketio = SocketIO(app)
 
 net = A3C()
 # four threads
-state_list = [[], [], [], []]
+state = None
+next_state = None
 
 
 def getTime():
@@ -31,19 +32,23 @@ def train():
     data = request.form
     thread_id = int(data['thread_id'])
     image = Image.open(BytesIO(base64.b64decode(data['img']))).convert('L')
-    global state_list
-    if len(state_list[thread_id]) == 0:
-        state_list[thread_id] = np.stack((image, image, image, image), axis=2)
-    else:
-        image = np.reshape(image, (84, 84, 1))
-        state_list[thread_id] = np.append(state_list[thread_id][:, :, 1:], image, axis=2)
     reward = float(data['reward'])
     terminal = data['terminal'] == 'true'
+    start_frame = data['state_frame'] == 'true'
+    
+    if start_frame:
+        state = np.stack((image, image, image, image), axis=2)
 
-    # print reward, terminal, np.shape(state_list[thread_id])
-    action_id = net.train_function(thread_id, state_list[thread_id], reward, terminal)
+    image = np.reshape(image, (84, 84, 1))
+    next_state = np.append(state[:, :, 1:], image, axis=2)
+
+    # print reward, terminal, np.shape(state)
+    action_id = net.train_function(thread_id, state, reward, next_state, terminal, start_frame)
+
+    # st <- st_1
+    state = next_state
     return jsonify(decode_action(action_id))
-    # image = Image.fromarray(state_list[thread_id][:, :, 0])
+    # image = Image.fromarray(state[:, :, 0])
     # image.save('img/' + str(getTime()) + '.png')
     # return jsonify(decode_action(0))
 
